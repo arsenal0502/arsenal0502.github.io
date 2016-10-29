@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   
   <title>EM算法 | 功夫阿拉克的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="功夫阿拉克的博客">
 <meta property="og:description" content="EM算法的主要思想123456E步就是估计隐含类别y的期望，M步调整其他参数使得在给定类别y的情况下，极大似然估计p(x,y)能够达到极大值。然后在其他参数确定的情况下，重新估计y，周而复始，直至收敛。举个EM算法中比较常见的例子，有100个男同学和100个女同学，这200个同学的身高信息已知，但是性别信息丢失。让我们分别求男同学和女同学的平均身高和方差。这个问题，我们先假设100个男同学的平均身">
 <meta property="og:image" content="https://arsenal0502.github.io/images/EM-algorithm.png">
-<meta property="og:updated_time" content="2016-10-29T11:33:28.210Z">
+<meta property="og:updated_time" content="2016-10-29T13:24:22.778Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="EM算法">
 <meta name="twitter:description" content="EM算法的主要思想123456E步就是估计隐含类别y的期望，M步调整其他参数使得在给定类别y的情况下，极大似然估计p(x,y)能够达到极大值。然后在其他参数确定的情况下，重新估计y，周而复始，直至收敛。举个EM算法中比较常见的例子，有100个男同学和100个女同学，这200个同学的身高信息已知，但是性别信息丢失。让我们分别求男同学和女同学的平均身高和方差。这个问题，我们先假设100个男同学的平均身">
@@ -26,13 +26,13 @@
   
     <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
   
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 </head>
 
 <body>
-  <div id="container">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="container">
     <div id="wrap">
       <header id="header">
   <div id="banner"></div>
@@ -92,13 +92,14 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="EM算法的主要思想"><a href="#EM算法的主要思想" class="headerlink" title="EM算法的主要思想"></a>EM算法的主要思想</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">E步就是估计隐含类别y的期望，M步调整其他参数使得在给定类别y的情况下，极大似然估计p(x,y)能够达到极大值。</div><div class="line">然后在其他参数确定的情况下，重新估计y，周而复始，直至收敛。</div><div class="line">举个EM算法中比较常见的例子，有100个男同学和100个女同学，这200个同学的身高信息已知，但是性别信息丢失。</div><div class="line">让我们分别求男同学和女同学的平均身高和方差。这个问题，我们先假设100个男同学的平均身高为175cm，方差为10；</div><div class="line">100个女同学的平均身高为160cm，方差为10（假设肯定是不对的）；在这个假设下，默认身高分布服从高斯分布，求出</div><div class="line">令这个均值和方差极大释然的高斯分布。然后求出此时高斯分布的均值和方差，不断循环，直至均值和方差不在发生变化。</div></pre></td></tr></table></figure>
-<h2 id="EM算法的数学推导"><a href="#EM算法的数学推导" class="headerlink" title="EM算法的数学推导"></a>EM算法的数学推导</h2><p><img src="https://arsenal0502.github.io/images/EM-algorithm.png" alt="&quot;数学推导&quot;"></p>
+<h2 id="EM算法的数学推导"><a href="#EM算法的数学推导" class="headerlink" title="EM算法的数学推导"></a>EM算法的数学推导</h2><p>$$\frac{\partial u}{\partial t}<br>= h^2 \left( \frac{\partial^2 u}{\partial x^2} +<br>\frac{\partial^2 u}{\partial y^2} +<br>\frac{\partial^2 u}{\partial z^2}\right)$$</p>
+<p><img src="https://arsenal0502.github.io/images/EM-algorithm.png" alt="&quot;数学推导&quot;"></p>
 <p>代码实现：<a href="https://github.com/arsenal0502/EM-algorithm" target="_blank" rel="external">https://github.com/arsenal0502/EM-algorithm</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/10/29/EM算法/" data-id="ciuv4q5mb000050uajo7nw76o" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/10/29/EM算法/" data-id="ciuv825dc0000lkuah0maie0i" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/">machine learning</a></li></ul>
@@ -210,6 +211,23 @@
 
 <script src="/js/script.js"></script>
 
-  </div>
+  </div><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
 </body>
 </html>
