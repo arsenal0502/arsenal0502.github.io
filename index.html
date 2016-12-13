@@ -68,6 +68,61 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-各种优化方法总结比较" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/12/13/各种优化方法总结比较/" class="article-date">
+  <time datetime="2016-12-13T08:50:23.000Z" itemprop="datePublished">2016-12-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/12/13/各种优化方法总结比较/">各种优化方法总结比较</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-SGD"><a href="#1-SGD" class="headerlink" title="1.SGD"></a>1.SGD</h2><p>SGD指stochastic gradient decent,即随机梯度下降，是梯度下降的batch版本。每次更新都利用<br>一个batch的数据，而非整个训练集。<br>$x_{t+1}=x_t+\Delta x_t$<br>$\Delta x_t=-\eta g_t$<br>$\mbox{其中，}\eta\mbox{为学习率，}g_t\mbox{为}x\mbox{在}t\mbox{时刻的梯度。}$</p>
+<h2 id="2-Momentum"><a href="#2-Momentum" class="headerlink" title="2.Momentum"></a>2.Momentum</h2><p>SGD方法的一个缺点是，其更新方向完全依赖于当前的batch，因而其更新十分不稳定。解决这一问题<br>的一个简单的方法便是引入momentum。momentum即动量，它模拟的是物体运动时的惯性，即更新的时候<br>在一定程度上保留之前更新的方向，同时利用当前batch的梯度微调最终的更新方向。这样一来，可以在<br>一定程度上增加稳定性，从而学习得更快，并且还有一定摆脱局部最优的能力：<br>$k=x_{t-1}$<br>$\Delta x_t=\rho\Delta k-\eta g_t$<br>$\mbox{其中，}\rho\mbox{即momentum,表示要多大程度上保留原来的更新方向，这个值在0-1之间，}$<br>在训练开始时，由于梯度可能会很大，所以初始值一般选0.5；当梯度不那么大时，改为0.9。<br>$\eta\mbox{是学习率，即当前batch的梯度多大程度上影响最终更新方向，与普通SGD含义相同。}$</p>
+<h2 id="3-Nesterov-Momentum"><a href="#3-Nesterov-Momentum" class="headerlink" title="3.Nesterov Momentum"></a>3.Nesterov Momentum</h2><p>进行了一下修正，达到准确的梯度值<br>$k=x_{t-1}$</p>
+<p>$t(x)=f(x_{t-1}+\rho\Delta k)$</p>
+<p>$\Delta x_t=\rho\Delta k-\eta\Delta t(x)$</p>
+<h2 id="4-Adagrad"><a href="#4-Adagrad" class="headerlink" title="4.Adagrad"></a>4.Adagrad</h2><p>上面提到的方法对于所有参数都使用了同一更新速率，但是同一个更新速率不一定适合所有参数。<br>比如有的参数可能已经到了仅需要微调的阶段，但又有些参数由于对应样本少等原因，还需要较大<br>幅度的调动。Adagrad就是针对这一问题提出的，自适应地为各个参数分配不同学习率的算法。</p>
+<p>$k=\sqrt{\sum_{r=1}^t g_r+\xi}$</p>
+<p>$\Delta x_t=-\frac{\eta}{k}g_t$</p>
+<p>$\mbox{其中}g_t\mbox{同样是当前的梯度，连加和开根号都是元素级别的运算。}$</p>
+<p>$\eta\mbox{是初始学习率，由于之后会自动调整学习率，所以初始值就不像之前的算法那样重要了，}$</p>
+<p>$\mbox{而}\xi\mbox{是一个比较小的数，用来保证分母非0。}$</p>
+<p>$\mbox{其含义是，对于每个参数，随着其更新的总距离增多，其学习速率也随之变慢。}$</p>
+<h2 id="5-Adadelta"><a href="#5-Adadelta" class="headerlink" title="5.Adadelta"></a>5.Adadelta</h2><p>Adagrad算法存在三个问题<br>（1）其学习率是单调递减的，训练后期学习率非常小。<br>（2）其需要手工设置一个全局的初始学习率。<br>（3）更新$x_t$时，左右两边的单位不统一<br>Adadelta针对上述三个问题提出了比较漂亮的解决方案。<br>首先，针对第一个问题，我们可以只使用adagrad的分母中的累计项离当前时间点比较近的项，如下式：</p>
+<p>$k=E[g^2]_{k-1}$</p>
+<p>$E[g^2]_t=\rho k+(1-\rho)g_t^2$</p>
+<p>$\Delta x_t=-\frac{\eta}{\sqrt{E[g^2]_t+\xi}} g_t$</p>
+<p>这里$\rho$是衰减系数，通过这个衰减系数，我们令每一个时刻的$g_t$随着时间按照$\rho$指数衰减</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://arsenal0502.github.io/2016/12/13/各种优化方法总结比较/" data-id="ciwnabkk60009vkua18vy4eyx" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/">machine learning</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-effective-c-plus-plus" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/12/13/effective-c-plus-plus/" class="article-date">
@@ -231,7 +286,7 @@ const Rational operator *(const Rational &amp;lhs,const Rational &amp;rhs)
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/12/13/effective-c-plus-plus/" data-id="ciwn9edpk0003p4uapwfuzyt8" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/12/13/effective-c-plus-plus/" data-id="ciwnabkjq0003vkua0yzexe26" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/">c++</a></li></ul>
@@ -270,7 +325,7 @@ const Rational operator *(const Rational &amp;lhs,const Rational &amp;rhs)
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/12/12/linux命令小结/" data-id="ciwn9edpz0005p4uajmixwprs" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/12/12/linux命令小结/" data-id="ciwnabkk60005vkuaa2yiybcl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
@@ -322,7 +377,7 @@ const Rational operator *(const Rational &amp;lhs,const Rational &amp;rhs)
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/12/12/tensorflow学习总结/" data-id="ciwn9edpz0008p4uao4xww6tp" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/12/12/tensorflow学习总结/" data-id="ciwnabkk60008vkua1s46vd9n" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/deep-learning/">deep learning</a></li></ul>
@@ -380,7 +435,7 @@ const Rational operator *(const Rational &amp;lhs,const Rational &amp;rhs)
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/10/29/EM算法/" data-id="ciwn9edp40000p4uad9w0dyk3" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/10/29/EM算法/" data-id="ciwnabkjq0000vkuay60ay72j" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/">machine learning</a></li></ul>
@@ -443,7 +498,7 @@ flatmap会将字符串看成是一个字符串数组。
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/10/29/Spark优化总结/" data-id="ciwn9edpk0001p4ua2xne4nhi" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/10/29/Spark优化总结/" data-id="ciwnabkjq0001vkuazyt1g4y0" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spark/">Spark</a></li></ul>
@@ -490,7 +545,7 @@ flatmap会将字符串看成是一个字符串数组。
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/10/29/hello-world/" data-id="ciwn9edpk0004p4ua6ip7jtt3" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/10/29/hello-world/" data-id="ciwnabkk60004vkuavpcp9xa7" class="article-share-link">Share</a>
       
       
     </footer>
@@ -522,7 +577,7 @@ flatmap会将字符串看成是一个字符串数组。
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Spark/" style="font-size: 10px;">Spark</a> <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/deep-learning/" style="font-size: 10px;">deep learning</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/machine-learning/" style="font-size: 10px;">machine learning</a>
+      <a href="/tags/Spark/" style="font-size: 10px;">Spark</a> <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/deep-learning/" style="font-size: 10px;">deep learning</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/machine-learning/" style="font-size: 20px;">machine learning</a>
     </div>
   </div>
 
@@ -544,6 +599,10 @@ flatmap会将字符串看成是一个字符串数组。
       <ul>
         
           <li>
+            <a href="/2016/12/13/各种优化方法总结比较/">各种优化方法总结比较</a>
+          </li>
+        
+          <li>
             <a href="/2016/12/13/effective-c-plus-plus/">effective c plus plus</a>
           </li>
         
@@ -557,10 +616,6 @@ flatmap会将字符串看成是一个字符串数组。
         
           <li>
             <a href="/2016/10/29/EM算法/">EM算法</a>
-          </li>
-        
-          <li>
-            <a href="/2016/10/29/Spark优化总结/">Spark优化总结</a>
           </li>
         
       </ul>
