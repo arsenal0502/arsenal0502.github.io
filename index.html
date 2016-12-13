@@ -68,6 +68,181 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-effective-c-plus-plus" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/12/13/effective-c-plus-plus/" class="article-date">
+  <time datetime="2016-12-13T02:28:17.000Z" itemprop="datePublished">2016-12-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/12/13/effective-c-plus-plus/">effective c plus plus</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-尽量以const-enum-inline替换-define"><a href="#1-尽量以const-enum-inline替换-define" class="headerlink" title="1.尽量以const,enum,inline替换#define"></a>1.尽量以const,enum,inline替换#define</h2><pre><code class="bash">例如：
+<span class="comment"># define ASPECT_RATIO 1.653</span>
+const double AspectRatio=1.653
+宏定义在编译前被预处理，编译器看不见
+</code></pre>
+<h2 id="2-尽量使用const"><a href="#2-尽量使用const" class="headerlink" title="2.尽量使用const"></a>2.尽量使用const</h2><pre><code class="bash">在实际使用中,const对象大多用于passed by pointer-to-const或passed by 
+reference-to-const的传递结果
+
+const对象调用const方法,non-const对象调用non-const方法，这种效率太低，
+需要non-const对象调用const方法(转型)
+
+例：
+class TextBlock{
+    public:/*...*/
+    const char &amp; operator[](std::size_t position) const//一如既往
+    {/*...*/ <span class="built_in">return</span> text[position];}
+    char &amp; operator[](std::size_t position)//现在只调用const op[]
+    {
+        <span class="built_in">return</span> const_cast&lt;char &amp;&gt;(static_cast&lt;const TextBlock &amp;&gt;(*this)[position]);
+    }
+}
+</code></pre>
+<h2 id="3-确定对象被使用前已先被初始化"><a href="#3-确定对象被使用前已先被初始化" class="headerlink" title="3.确定对象被使用前已先被初始化"></a>3.确定对象被使用前已先被初始化</h2><pre><code class="bash">c++规定，对象的成员变量的初始化动作发生在进入构造函数本体之前，构造函数的一个
+较佳写法是，使用所谓的member initialization list（成员初值列）替换赋值动作。
+例：
+ABEntry::ABEntry(const std::string &amp;name,const std::string &amp;address,
+                 const std::list&lt;PhoneNumber&gt; &amp; phones)
+                 :theName(name),theAddress(address),thePhones(phones),numTimeConsulted(0)
+{}//构造函数本体不必有任何动作，通常效率高
+</code></pre>
+<h2 id="4-如果不想使用编译器提供的函数"><a href="#4-如果不想使用编译器提供的函数" class="headerlink" title="4.如果不想使用编译器提供的函数"></a>4.如果不想使用编译器提供的函数</h2><pre><code class="bash">为驳回编译器自动提供的机能，可将相应的成员函数声明为private并且不予实现。使用像Uncopyable
+这样的base class 也是一种做法。
+class Uncopyable{
+    protected://允许derived对象构造和析构
+        <span class="function"><span class="title">Uncopyable</span></span>(){};
+        ~<span class="function"><span class="title">Uncopyable</span></span>(){};
+    private:
+        Uncopyable(const Uncopyable&amp;);//阻止copy
+        Uncopyable &amp; operator=(const Uncopyable &amp;));
+};//只需继承这个类
+</code></pre>
+<h2 id="5-为多态基类声明virtual析构函数"><a href="#5-为多态基类声明virtual析构函数" class="headerlink" title="5.为多态基类声明virtual析构函数"></a>5.为多态基类声明virtual析构函数</h2><pre><code class="bash">1.当derived class对象经由一个base class指针被删除，而该base class带着一个non-virtual析构函数，
+其结果未有定义——实际上执行时通常发生的是对象的derived成分没被销毁。
+2.如果class不含virtual函数，通常表示它并不意图被用做一个base class。如果class带有任何virtual
+函数，它就应该拥有一个virtual析构函数。
+</code></pre>
+<h2 id="6-析构函数绝对不要吐出异常"><a href="#6-析构函数绝对不要吐出异常" class="headerlink" title="6.析构函数绝对不要吐出异常"></a>6.析构函数绝对不要吐出异常</h2><pre><code class="bash">1.如果一个被析构函数调用的函数可能抛出异常，析构函数应该捕捉任何异常，然后吞下它们（不传播）
+或结束程序。
+2.如果客户需要对一个操作函数运行期间抛出的异常做出反应，那么class应该提供一个普通函数
+（而非在析构函数中）执行该操作。
+</code></pre>
+<h2 id="7-绝不在构造和析构过程中调用virtual函数"><a href="#7-绝不在构造和析构过程中调用virtual函数" class="headerlink" title="7.绝不在构造和析构过程中调用virtual函数"></a>7.绝不在构造和析构过程中调用virtual函数</h2><pre><code class="bash">由于base class构造函数的执行更早于derived class构造函数，当base class构造函数执行时，
+derived class的成员变量尚未初始化。
+</code></pre>
+<h2 id="8-令operator-返回一个reference-to-this"><a href="#8-令operator-返回一个reference-to-this" class="headerlink" title="8.令operator=返回一个reference to *this"></a>8.令operator=返回一个reference to *this</h2><pre><code class="bash">class Widget{
+    public:
+        Widget &amp; operator=(const Widget &amp; rhs){
+            /*...*/
+            <span class="built_in">return</span> *this;
+        }
+};
+</code></pre>
+<h2 id="9-在operator-中处理“自我赋值”"><a href="#9-在operator-中处理“自我赋值”" class="headerlink" title="9.在operator=中处理“自我赋值”"></a>9.在operator=中处理“自我赋值”</h2><pre><code class="bash">class Widget{
+    /*...*/
+    public:
+        void swap(Widget &amp;rhs);//交换*this和rhs是数据
+};
+Widget &amp;Widget::operator=(const Widget &amp;rhs)
+{
+    Widget temp(rhs);//为rhs数据制作一份副本
+    swap(temp);//将*this数据和上述副本的数据交换
+    <span class="built_in">return</span> *this;
+}
+</code></pre>
+<h2 id="10-让接口容易被正确使用，不易被误用"><a href="#10-让接口容易被正确使用，不易被误用" class="headerlink" title="10.让接口容易被正确使用，不易被误用"></a>10.让接口容易被正确使用，不易被误用</h2><pre><code class="bash">比较安全的写法是预先定义所有有效的Months
+class Month{
+    public:
+        static Month <span class="function"><span class="title">Jan</span></span>(){<span class="built_in">return</span> Month(1);}
+        /*...*/
+        static Month <span class="function"><span class="title">Dec</span></span>(){<span class="built_in">return</span> Month(12);}
+    private:
+        explicit Month(int m);//阻止生成新的月份
+        /*...*/
+};
+
+Date d(Month::Mar(),Day(30),Year(1995));
+</code></pre>
+<h2 id="11-宁以pass-by-reference-to-const替换pass-by-value"><a href="#11-宁以pass-by-reference-to-const替换pass-by-value" class="headerlink" title="11.宁以pass-by-reference-to-const替换pass-by-value"></a>11.宁以pass-by-reference-to-const替换pass-by-value</h2><pre><code class="bash">减少复制，提高效率
+</code></pre>
+<h2 id="12-必须返回对象时，别妄想返回其reference"><a href="#12-必须返回对象时，别妄想返回其reference" class="headerlink" title="12.必须返回对象时，别妄想返回其reference"></a>12.必须返回对象时，别妄想返回其reference</h2><pre><code class="bash">错误1：
+const Rational &amp; operator*(const Rational &amp;lhs,const Rational &amp;rhs)
+{
+    Rational result(lhs.n*rhs.n,lhs.d*rhs.d);
+    <span class="built_in">return</span> result;//引用的是已被销毁的<span class="built_in">local</span>对象
+}
+错误2：
+const Rational &amp; operator*(const Rational &amp;lhs,const Rational &amp;rhs)
+{
+    Rational *result=new Rational(lhs.n*rhs.n,lhs.d*rhs.d);
+    <span class="built_in">return</span> *result; 
+}//问题：必须付出一个“构造函数调用”代价，同时如何对new出来的对象实施delect?
+正确写法：
+inline const Rational operator*(const Rational &amp;lhs,const Rational &amp;rhs)
+{
+    <span class="built_in">return</span> Rational(lhs.n*rhs.n,lhs.d*rhs.d);
+}
+绝不要返回pointer或reference指向一个<span class="built_in">local</span> stack对象，或返回reference 指向
+一个heap-allocated对象，或返回pointer或reference指向一个<span class="built_in">local</span> static对象
+而有可能同时需要多个这样的对象。
+</code></pre>
+<h2 id="13-将成员变量声明为private-protected并不比public更具有封装性"><a href="#13-将成员变量声明为private-protected并不比public更具有封装性" class="headerlink" title="13.将成员变量声明为private,protected并不比public更具有封装性"></a>13.将成员变量声明为private,protected并不比public更具有封装性</h2><h2 id="14-宁以non-member，non-friend替换member函数"><a href="#14-宁以non-member，non-friend替换member函数" class="headerlink" title="14.宁以non-member，non-friend替换member函数"></a>14.宁以non-member，non-friend替换member函数</h2><h2 id="15-使用非成员函数（non-member）处理函数的所有参数都需要类型转换"><a href="#15-使用非成员函数（non-member）处理函数的所有参数都需要类型转换" class="headerlink" title="15.使用非成员函数（non-member）处理函数的所有参数都需要类型转换"></a>15.使用非成员函数（non-member）处理函数的所有参数都需要类型转换</h2><pre><code class="bash">因为成员函数的发起者必须是类，若出现double类型在前的情况，则无法执行乘法，
+所以应使用非成员函数。
+例：
+class Rational{
+    public:
+        Rational(double numerator=0,double denominator=1)
+                :m_n(numerator),m_d(denominator){}
+        double numerator() const{<span class="built_in">return</span> m_n;}
+        double denominator() const{<span class="built_in">return</span> m_d;}
+        double <span class="function"><span class="title">value</span></span>(){<span class="built_in">return</span> (m_n/m_d);}
+    private:
+        double m_n;
+        double m_d;
+};
+const Rational operator *(const Rational &amp;lhs,const Rational &amp;rhs)
+{
+    <span class="built_in">return</span> Rational(lhs.numerator()*rhs.numerator(),lhs.denominator()*rhs.denominator());
+}
+</code></pre>
+<h2 id="16-inline函数"><a href="#16-inline函数" class="headerlink" title="16.inline函数"></a>16.inline函数</h2><pre><code class="bash">inline函数背后的整体观念是，将“对此函数的每一个调用”都以函数本体替换之。
+</code></pre>
+<h2 id="17-绝对不要重新定义继承而来的non-virtual函数"><a href="#17-绝对不要重新定义继承而来的non-virtual函数" class="headerlink" title="17.绝对不要重新定义继承而来的non-virtual函数"></a>17.绝对不要重新定义继承而来的non-virtual函数</h2><h2 id="18-如果派生类的函数与基类函数同名，但是参数不同。"><a href="#18-如果派生类的函数与基类函数同名，但是参数不同。" class="headerlink" title="18.如果派生类的函数与基类函数同名，但是参数不同。"></a>18.如果派生类的函数与基类函数同名，但是参数不同。</h2><pre><code class="bash">此时，无论其有无virtual关键字，基类的函数将被隐藏。
+</code></pre>
+<h2 id="19-如果派生类的函数与基类函数同名，而且参数也相同。"><a href="#19-如果派生类的函数与基类函数同名，而且参数也相同。" class="headerlink" title="19.如果派生类的函数与基类函数同名，而且参数也相同。"></a>19.如果派生类的函数与基类函数同名，而且参数也相同。</h2><pre><code class="bash">基类没有关键字，此时基类的函数被隐藏。
+</code></pre>
+<h2 id="20-c-纯虚函数"><a href="#20-c-纯虚函数" class="headerlink" title="20.c++纯虚函数"></a>20.c++纯虚函数</h2><pre><code class="bash">virtual void <span class="keyword">function</span>()=0;
+</code></pre>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://arsenal0502.github.io/2016/12/13/effective-c-plus-plus/" data-id="ciwn9edpk0003p4uapwfuzyt8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/">c++</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-linux命令小结" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/12/12/linux命令小结/" class="article-date">
@@ -95,7 +270,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/12/12/linux命令小结/" data-id="ciwm47ez80004psua1tlu43ra" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/12/12/linux命令小结/" data-id="ciwn9edpz0005p4uajmixwprs" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
@@ -147,7 +322,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/12/12/tensorflow学习总结/" data-id="ciwm47ez80005psuacswoxysd" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/12/12/tensorflow学习总结/" data-id="ciwn9edpz0008p4uao4xww6tp" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/deep-learning/">deep learning</a></li></ul>
@@ -205,7 +380,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/10/29/EM算法/" data-id="ciwm47eys0000psua2gz9h9rj" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/10/29/EM算法/" data-id="ciwn9edp40000p4uad9w0dyk3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/">machine learning</a></li></ul>
@@ -239,16 +414,36 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="1-groupByKey"><a href="#1-groupByKey" class="headerlink" title="1.groupByKey"></a>1.groupByKey</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Avoid groupByKey when performing an associative reductive operation.</div><div class="line">例如将rdd.groupByKey().mapValues(_.sum)改为rdd.reduceByKey()</div></pre></td></tr></table></figure>
+        <h2 id="1-groupByKey"><a href="#1-groupByKey" class="headerlink" title="1.groupByKey"></a>1.groupByKey</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Avoid groupByKey when performing an associative reductive operation.</div><div class="line">例如将rdd.groupByKey().mapValues(_.sum)改为rdd.reduceByKey()</div><div class="line">尽量少使用，因为相当于少个combiner</div></pre></td></tr></table></figure>
 <h2 id="2-reduceByKey"><a href="#2-reduceByKey" class="headerlink" title="2.reduceByKey"></a>2.reduceByKey</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Avoid reduceByKey when the input and output value types are different.</div><div class="line">例如将rdd.map(kv=&gt;(kv._1,new Set[String]()+kv._2)).reduceByKey(_+_)转变为</div><div class="line">Val zero=new collection.mutable.Set[String]()</div><div class="line">Rdd.aggregateByKey(zero)((<span class="built_in">set</span>,v)=&gt;<span class="built_in">set</span>+=v,(<span class="built_in">set</span>1,<span class="built_in">set</span>2)=&gt;<span class="built_in">set</span>1++=<span class="built_in">set</span>2)</div></pre></td></tr></table></figure>
 <h2 id="3-flatMap-join-groupBy-pattern"><a href="#3-flatMap-join-groupBy-pattern" class="headerlink" title="3.flatMap-join-groupBy pattern"></a>3.flatMap-join-groupBy pattern</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Avoid the flatMap-join-groupBy pattern.</div><div class="line">when two datasets are already grouped by key and you want to join them and keep them grouped,</div><div class="line">you can just use cogroup.This avoids all the overhead associated with unpacking and repacking the groups.</div></pre></td></tr></table></figure>
 <h2 id="4-suffles"><a href="#4-suffles" class="headerlink" title="4.suffles"></a>4.suffles</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">When more suffles are better:</div><div class="line">This trick is especially useful when the aggregation is already grouped by a key.</div><div class="line">For example,consider an app that wants to count the occurences of each word </div><div class="line"><span class="keyword">in</span> a corpus and pull the results into the driver as a map.</div><div class="line">One approach,<span class="built_in">which</span> can be accomolished with the aggregate action,is to compute a <span class="built_in">local</span> map </div><div class="line">at each partition  and <span class="keyword">then</span> merge the maps at the driver.</div><div class="line">The alternative approach ,<span class="built_in">which</span> can be accomplished with aggregateByKey ,</div><div class="line">is to perform the count <span class="keyword">in</span> a fully distributed way ,and them simply collectAsMap the results to driver.</div></pre></td></tr></table></figure>
 <h2 id="5-repartitionAndSortWithInPartitions"><a href="#5-repartitionAndSortWithInPartitions" class="headerlink" title="5.repartitionAndSortWithInPartitions"></a>5.repartitionAndSortWithInPartitions</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">This is more efficient than calling repartition and <span class="keyword">then</span> sorting within </div><div class="line">each partition because it can push the sorting down into the shuffle machinery.</div></pre></td></tr></table></figure>
+<h2 id="6-flatmap"><a href="#6-flatmap" class="headerlink" title="6.flatmap"></a>6.flatmap</h2><pre><code class="bash">flatmap函数是两个操作的集合——先映射后扁平化。
+操作1：同map函数一样，对每一条输入进行指定操作，然后为每一条输入返回一个对象。
+操作2：最后为每一条输入返回一个对象。
+
+flatmap会将字符串看成是一个字符串数组。
+</code></pre>
+<h2 id="7-foldByKey"><a href="#7-foldByKey" class="headerlink" title="7.foldByKey"></a>7.foldByKey</h2><pre><code class="bash">在使用flodByKey算子时，需特别注意映射函数及zeroValue的取值
+</code></pre>
+<h2 id="8-reduceByKeyLocally"><a href="#8-reduceByKeyLocally" class="headerlink" title="8.reduceByKeyLocally"></a>8.reduceByKeyLocally</h2><pre><code class="bash">该函数将RDD[k,v]中每个k对应的v值，根据映射函数来运算，运算结果映射到一个Map[k,v]中，而不是RDD[k,v]
+</code></pre>
+<h2 id="9-foreach"><a href="#9-foreach" class="headerlink" title="9.foreach"></a>9.foreach</h2><pre><code class="bash">如果对RDD执行foreach，只会在Executor端有效，而不是Driver端
+</code></pre>
+<h2 id="10-persist"><a href="#10-persist" class="headerlink" title="10.persist()"></a>10.persist()</h2><pre><code class="bash">If we also wanted to use lineLengths again later,we could add :lineLengths.persist() before the reduce.
+</code></pre>
+<h2 id="11-checkpoint"><a href="#11-checkpoint" class="headerlink" title="11.checkpoint"></a>11.checkpoint</h2><pre><code class="bash">RDD需要加检查点的原因：
+1.DAG中Lineage过长，如果重算，则开销太大（如在PageRank中）
+2.在shuffle dependency上做checkpoint 获得的收益更大
+</code></pre>
+<h2 id="12-HashPartitioner和RangePartitioner"><a href="#12-HashPartitioner和RangePartitioner" class="headerlink" title="12.HashPartitioner和RangePartitioner"></a>12.HashPartitioner和RangePartitioner</h2><pre><code class="bash">使用HashPartitioner和RangePartitioner来减少网络通信开销
+</code></pre>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/10/29/Spark优化总结/" data-id="ciwm47ez80001psuakivcmdmn" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/10/29/Spark优化总结/" data-id="ciwn9edpk0001p4ua2xne4nhi" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spark/">Spark</a></li></ul>
@@ -295,7 +490,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/10/29/hello-world/" data-id="ciwm47ez80003psuaoe5psw8w" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/10/29/hello-world/" data-id="ciwn9edpk0004p4ua6ip7jtt3" class="article-share-link">Share</a>
       
       
     </footer>
@@ -317,7 +512,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/deep-learning/">deep learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/machine-learning/">machine learning</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/deep-learning/">deep learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/machine-learning/">machine learning</a></li></ul>
     </div>
   </div>
 
@@ -327,7 +522,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Spark/" style="font-size: 10px;">Spark</a> <a href="/tags/deep-learning/" style="font-size: 10px;">deep learning</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/machine-learning/" style="font-size: 10px;">machine learning</a>
+      <a href="/tags/Spark/" style="font-size: 10px;">Spark</a> <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/deep-learning/" style="font-size: 10px;">deep learning</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/machine-learning/" style="font-size: 10px;">machine learning</a>
     </div>
   </div>
 
@@ -349,6 +544,10 @@
       <ul>
         
           <li>
+            <a href="/2016/12/13/effective-c-plus-plus/">effective c plus plus</a>
+          </li>
+        
+          <li>
             <a href="/2016/12/12/linux命令小结/">linux命令小结</a>
           </li>
         
@@ -362,10 +561,6 @@
         
           <li>
             <a href="/2016/10/29/Spark优化总结/">Spark优化总结</a>
-          </li>
-        
-          <li>
-            <a href="/2016/10/29/hello-world/">Hello World</a>
           </li>
         
       </ul>

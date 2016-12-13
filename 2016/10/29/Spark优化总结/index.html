@@ -5,19 +5,19 @@
   
   <title>Spark优化总结 | 功夫阿拉克的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1.groupByKey12Avoid groupByKey when performing an associative reductive operation.例如将rdd.groupByKey().mapValues(_.sum)改为rdd.reduceByKey()
-2.reduceByKey1234Avoid reduceByKey when the input and output v">
+  <meta name="description" content="1.groupByKey123Avoid groupByKey when performing an associative reductive operation.例如将rdd.groupByKey().mapValues(_.sum)改为rdd.reduceByKey()尽量少使用，因为相当于少个combiner
+2.reduceByKey1234Avoid reduceByKey when">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spark优化总结">
 <meta property="og:url" content="http://arsenal0502.github.io/2016/10/29/Spark优化总结/index.html">
 <meta property="og:site_name" content="功夫阿拉克的博客">
-<meta property="og:description" content="1.groupByKey12Avoid groupByKey when performing an associative reductive operation.例如将rdd.groupByKey().mapValues(_.sum)改为rdd.reduceByKey()
-2.reduceByKey1234Avoid reduceByKey when the input and output v">
-<meta property="og:updated_time" content="2016-10-29T07:38:10.476Z">
+<meta property="og:description" content="1.groupByKey123Avoid groupByKey when performing an associative reductive operation.例如将rdd.groupByKey().mapValues(_.sum)改为rdd.reduceByKey()尽量少使用，因为相当于少个combiner
+2.reduceByKey1234Avoid reduceByKey when">
+<meta property="og:updated_time" content="2016-12-13T04:45:51.945Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spark优化总结">
-<meta name="twitter:description" content="1.groupByKey12Avoid groupByKey when performing an associative reductive operation.例如将rdd.groupByKey().mapValues(_.sum)改为rdd.reduceByKey()
-2.reduceByKey1234Avoid reduceByKey when the input and output v">
+<meta name="twitter:description" content="1.groupByKey123Avoid groupByKey when performing an associative reductive operation.例如将rdd.groupByKey().mapValues(_.sum)改为rdd.reduceByKey()尽量少使用，因为相当于少个combiner
+2.reduceByKey1234Avoid reduceByKey when">
   
     <link rel="alternate" href="/atom.xml" title="功夫阿拉克的博客" type="application/atom+xml">
   
@@ -92,16 +92,36 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="1-groupByKey"><a href="#1-groupByKey" class="headerlink" title="1.groupByKey"></a>1.groupByKey</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Avoid groupByKey when performing an associative reductive operation.</div><div class="line">例如将rdd.groupByKey().mapValues(_.sum)改为rdd.reduceByKey()</div></pre></td></tr></table></figure>
+        <h2 id="1-groupByKey"><a href="#1-groupByKey" class="headerlink" title="1.groupByKey"></a>1.groupByKey</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Avoid groupByKey when performing an associative reductive operation.</div><div class="line">例如将rdd.groupByKey().mapValues(_.sum)改为rdd.reduceByKey()</div><div class="line">尽量少使用，因为相当于少个combiner</div></pre></td></tr></table></figure>
 <h2 id="2-reduceByKey"><a href="#2-reduceByKey" class="headerlink" title="2.reduceByKey"></a>2.reduceByKey</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Avoid reduceByKey when the input and output value types are different.</div><div class="line">例如将rdd.map(kv=&gt;(kv._1,new Set[String]()+kv._2)).reduceByKey(_+_)转变为</div><div class="line">Val zero=new collection.mutable.Set[String]()</div><div class="line">Rdd.aggregateByKey(zero)((<span class="built_in">set</span>,v)=&gt;<span class="built_in">set</span>+=v,(<span class="built_in">set</span>1,<span class="built_in">set</span>2)=&gt;<span class="built_in">set</span>1++=<span class="built_in">set</span>2)</div></pre></td></tr></table></figure>
 <h2 id="3-flatMap-join-groupBy-pattern"><a href="#3-flatMap-join-groupBy-pattern" class="headerlink" title="3.flatMap-join-groupBy pattern"></a>3.flatMap-join-groupBy pattern</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Avoid the flatMap-join-groupBy pattern.</div><div class="line">when two datasets are already grouped by key and you want to join them and keep them grouped,</div><div class="line">you can just use cogroup.This avoids all the overhead associated with unpacking and repacking the groups.</div></pre></td></tr></table></figure>
 <h2 id="4-suffles"><a href="#4-suffles" class="headerlink" title="4.suffles"></a>4.suffles</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">When more suffles are better:</div><div class="line">This trick is especially useful when the aggregation is already grouped by a key.</div><div class="line">For example,consider an app that wants to count the occurences of each word </div><div class="line"><span class="keyword">in</span> a corpus and pull the results into the driver as a map.</div><div class="line">One approach,<span class="built_in">which</span> can be accomolished with the aggregate action,is to compute a <span class="built_in">local</span> map </div><div class="line">at each partition  and <span class="keyword">then</span> merge the maps at the driver.</div><div class="line">The alternative approach ,<span class="built_in">which</span> can be accomplished with aggregateByKey ,</div><div class="line">is to perform the count <span class="keyword">in</span> a fully distributed way ,and them simply collectAsMap the results to driver.</div></pre></td></tr></table></figure>
 <h2 id="5-repartitionAndSortWithInPartitions"><a href="#5-repartitionAndSortWithInPartitions" class="headerlink" title="5.repartitionAndSortWithInPartitions"></a>5.repartitionAndSortWithInPartitions</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">This is more efficient than calling repartition and <span class="keyword">then</span> sorting within </div><div class="line">each partition because it can push the sorting down into the shuffle machinery.</div></pre></td></tr></table></figure>
+<h2 id="6-flatmap"><a href="#6-flatmap" class="headerlink" title="6.flatmap"></a>6.flatmap</h2><pre><code class="bash">flatmap函数是两个操作的集合——先映射后扁平化。
+操作1：同map函数一样，对每一条输入进行指定操作，然后为每一条输入返回一个对象。
+操作2：最后为每一条输入返回一个对象。
+
+flatmap会将字符串看成是一个字符串数组。
+</code></pre>
+<h2 id="7-foldByKey"><a href="#7-foldByKey" class="headerlink" title="7.foldByKey"></a>7.foldByKey</h2><pre><code class="bash">在使用flodByKey算子时，需特别注意映射函数及zeroValue的取值
+</code></pre>
+<h2 id="8-reduceByKeyLocally"><a href="#8-reduceByKeyLocally" class="headerlink" title="8.reduceByKeyLocally"></a>8.reduceByKeyLocally</h2><pre><code class="bash">该函数将RDD[k,v]中每个k对应的v值，根据映射函数来运算，运算结果映射到一个Map[k,v]中，而不是RDD[k,v]
+</code></pre>
+<h2 id="9-foreach"><a href="#9-foreach" class="headerlink" title="9.foreach"></a>9.foreach</h2><pre><code class="bash">如果对RDD执行foreach，只会在Executor端有效，而不是Driver端
+</code></pre>
+<h2 id="10-persist"><a href="#10-persist" class="headerlink" title="10.persist()"></a>10.persist()</h2><pre><code class="bash">If we also wanted to use lineLengths again later,we could add :lineLengths.persist() before the reduce.
+</code></pre>
+<h2 id="11-checkpoint"><a href="#11-checkpoint" class="headerlink" title="11.checkpoint"></a>11.checkpoint</h2><pre><code class="bash">RDD需要加检查点的原因：
+1.DAG中Lineage过长，如果重算，则开销太大（如在PageRank中）
+2.在shuffle dependency上做checkpoint 获得的收益更大
+</code></pre>
+<h2 id="12-HashPartitioner和RangePartitioner"><a href="#12-HashPartitioner和RangePartitioner" class="headerlink" title="12.HashPartitioner和RangePartitioner"></a>12.HashPartitioner和RangePartitioner</h2><pre><code class="bash">使用HashPartitioner和RangePartitioner来减少网络通信开销
+</code></pre>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/10/29/Spark优化总结/" data-id="ciwm47ez80001psuakivcmdmn" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/10/29/Spark优化总结/" data-id="ciwn9edpk0001p4ua2xne4nhi" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spark/">Spark</a></li></ul>
@@ -143,7 +163,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/deep-learning/">deep learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/machine-learning/">machine learning</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/deep-learning/">deep learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/machine-learning/">machine learning</a></li></ul>
     </div>
   </div>
 
@@ -153,7 +173,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Spark/" style="font-size: 10px;">Spark</a> <a href="/tags/deep-learning/" style="font-size: 10px;">deep learning</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/machine-learning/" style="font-size: 10px;">machine learning</a>
+      <a href="/tags/Spark/" style="font-size: 10px;">Spark</a> <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/deep-learning/" style="font-size: 10px;">deep learning</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/machine-learning/" style="font-size: 10px;">machine learning</a>
     </div>
   </div>
 
@@ -175,6 +195,10 @@
       <ul>
         
           <li>
+            <a href="/2016/12/13/effective-c-plus-plus/">effective c plus plus</a>
+          </li>
+        
+          <li>
             <a href="/2016/12/12/linux命令小结/">linux命令小结</a>
           </li>
         
@@ -188,10 +212,6 @@
         
           <li>
             <a href="/2016/10/29/Spark优化总结/">Spark优化总结</a>
-          </li>
-        
-          <li>
-            <a href="/2016/10/29/hello-world/">Hello World</a>
           </li>
         
       </ul>

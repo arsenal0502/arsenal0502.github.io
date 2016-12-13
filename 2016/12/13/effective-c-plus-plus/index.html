@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  
+  <title>effective c plus plus | 功夫阿拉克的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1.尽量以const,enum,inline替换#define例如：
+# define ASPECT_RATIO 1.653
+const double AspectRatio=1.653
+宏定义在编译前被预处理，编译器看不见
+
+2.尽量使用const在实际使用中,const对象大多用于passed by pointer-to-const或passed by 
+reference-to-const的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="effective c plus plus">
+<meta property="og:url" content="http://arsenal0502.github.io/2016/12/13/effective-c-plus-plus/index.html">
+<meta property="og:site_name" content="功夫阿拉克的博客">
+<meta property="og:description" content="1.尽量以const,enum,inline替换#define例如：
+# define ASPECT_RATIO 1.653
+const double AspectRatio=1.653
+宏定义在编译前被预处理，编译器看不见
+
+2.尽量使用const在实际使用中,const对象大多用于passed by pointer-to-const或passed by 
+reference-to-const的">
+<meta property="og:updated_time" content="2016-12-13T08:41:15.268Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="effective c plus plus">
+<meta name="twitter:description" content="1.尽量以const,enum,inline替换#define例如：
+# define ASPECT_RATIO 1.653
+const double AspectRatio=1.653
+宏定义在编译前被预处理，编译器看不见
+
+2.尽量使用const在实际使用中,const对象大多用于passed by pointer-to-const或passed by 
+reference-to-const的">
+  
+    <link rel="alternate" href="/atom.xml" title="功夫阿拉克的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">功夫阿拉克的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">曾经沧海难为水，除却巫山不是云。</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://arsenal0502.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-effective-c-plus-plus" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/12/13/effective-c-plus-plus/" class="article-date">
+  <time datetime="2016-12-13T02:28:17.000Z" itemprop="datePublished">2016-12-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      effective c plus plus
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-尽量以const-enum-inline替换-define"><a href="#1-尽量以const-enum-inline替换-define" class="headerlink" title="1.尽量以const,enum,inline替换#define"></a>1.尽量以const,enum,inline替换#define</h2><pre><code class="bash">例如：
+<span class="comment"># define ASPECT_RATIO 1.653</span>
+const double AspectRatio=1.653
+宏定义在编译前被预处理，编译器看不见
+</code></pre>
+<h2 id="2-尽量使用const"><a href="#2-尽量使用const" class="headerlink" title="2.尽量使用const"></a>2.尽量使用const</h2><pre><code class="bash">在实际使用中,const对象大多用于passed by pointer-to-const或passed by 
+reference-to-const的传递结果
+
+const对象调用const方法,non-const对象调用non-const方法，这种效率太低，
+需要non-const对象调用const方法(转型)
+
+例：
+class TextBlock{
+    public:/*...*/
+    const char &amp; operator[](std::size_t position) const//一如既往
+    {/*...*/ <span class="built_in">return</span> text[position];}
+    char &amp; operator[](std::size_t position)//现在只调用const op[]
+    {
+        <span class="built_in">return</span> const_cast&lt;char &amp;&gt;(static_cast&lt;const TextBlock &amp;&gt;(*this)[position]);
+    }
+}
+</code></pre>
+<h2 id="3-确定对象被使用前已先被初始化"><a href="#3-确定对象被使用前已先被初始化" class="headerlink" title="3.确定对象被使用前已先被初始化"></a>3.确定对象被使用前已先被初始化</h2><pre><code class="bash">c++规定，对象的成员变量的初始化动作发生在进入构造函数本体之前，构造函数的一个
+较佳写法是，使用所谓的member initialization list（成员初值列）替换赋值动作。
+例：
+ABEntry::ABEntry(const std::string &amp;name,const std::string &amp;address,
+                 const std::list&lt;PhoneNumber&gt; &amp; phones)
+                 :theName(name),theAddress(address),thePhones(phones),numTimeConsulted(0)
+{}//构造函数本体不必有任何动作，通常效率高
+</code></pre>
+<h2 id="4-如果不想使用编译器提供的函数"><a href="#4-如果不想使用编译器提供的函数" class="headerlink" title="4.如果不想使用编译器提供的函数"></a>4.如果不想使用编译器提供的函数</h2><pre><code class="bash">为驳回编译器自动提供的机能，可将相应的成员函数声明为private并且不予实现。使用像Uncopyable
+这样的base class 也是一种做法。
+class Uncopyable{
+    protected://允许derived对象构造和析构
+        <span class="function"><span class="title">Uncopyable</span></span>(){};
+        ~<span class="function"><span class="title">Uncopyable</span></span>(){};
+    private:
+        Uncopyable(const Uncopyable&amp;);//阻止copy
+        Uncopyable &amp; operator=(const Uncopyable &amp;));
+};//只需继承这个类
+</code></pre>
+<h2 id="5-为多态基类声明virtual析构函数"><a href="#5-为多态基类声明virtual析构函数" class="headerlink" title="5.为多态基类声明virtual析构函数"></a>5.为多态基类声明virtual析构函数</h2><pre><code class="bash">1.当derived class对象经由一个base class指针被删除，而该base class带着一个non-virtual析构函数，
+其结果未有定义——实际上执行时通常发生的是对象的derived成分没被销毁。
+2.如果class不含virtual函数，通常表示它并不意图被用做一个base class。如果class带有任何virtual
+函数，它就应该拥有一个virtual析构函数。
+</code></pre>
+<h2 id="6-析构函数绝对不要吐出异常"><a href="#6-析构函数绝对不要吐出异常" class="headerlink" title="6.析构函数绝对不要吐出异常"></a>6.析构函数绝对不要吐出异常</h2><pre><code class="bash">1.如果一个被析构函数调用的函数可能抛出异常，析构函数应该捕捉任何异常，然后吞下它们（不传播）
+或结束程序。
+2.如果客户需要对一个操作函数运行期间抛出的异常做出反应，那么class应该提供一个普通函数
+（而非在析构函数中）执行该操作。
+</code></pre>
+<h2 id="7-绝不在构造和析构过程中调用virtual函数"><a href="#7-绝不在构造和析构过程中调用virtual函数" class="headerlink" title="7.绝不在构造和析构过程中调用virtual函数"></a>7.绝不在构造和析构过程中调用virtual函数</h2><pre><code class="bash">由于base class构造函数的执行更早于derived class构造函数，当base class构造函数执行时，
+derived class的成员变量尚未初始化。
+</code></pre>
+<h2 id="8-令operator-返回一个reference-to-this"><a href="#8-令operator-返回一个reference-to-this" class="headerlink" title="8.令operator=返回一个reference to *this"></a>8.令operator=返回一个reference to *this</h2><pre><code class="bash">class Widget{
+    public:
+        Widget &amp; operator=(const Widget &amp; rhs){
+            /*...*/
+            <span class="built_in">return</span> *this;
+        }
+};
+</code></pre>
+<h2 id="9-在operator-中处理“自我赋值”"><a href="#9-在operator-中处理“自我赋值”" class="headerlink" title="9.在operator=中处理“自我赋值”"></a>9.在operator=中处理“自我赋值”</h2><pre><code class="bash">class Widget{
+    /*...*/
+    public:
+        void swap(Widget &amp;rhs);//交换*this和rhs是数据
+};
+Widget &amp;Widget::operator=(const Widget &amp;rhs)
+{
+    Widget temp(rhs);//为rhs数据制作一份副本
+    swap(temp);//将*this数据和上述副本的数据交换
+    <span class="built_in">return</span> *this;
+}
+</code></pre>
+<h2 id="10-让接口容易被正确使用，不易被误用"><a href="#10-让接口容易被正确使用，不易被误用" class="headerlink" title="10.让接口容易被正确使用，不易被误用"></a>10.让接口容易被正确使用，不易被误用</h2><pre><code class="bash">比较安全的写法是预先定义所有有效的Months
+class Month{
+    public:
+        static Month <span class="function"><span class="title">Jan</span></span>(){<span class="built_in">return</span> Month(1);}
+        /*...*/
+        static Month <span class="function"><span class="title">Dec</span></span>(){<span class="built_in">return</span> Month(12);}
+    private:
+        explicit Month(int m);//阻止生成新的月份
+        /*...*/
+};
+
+Date d(Month::Mar(),Day(30),Year(1995));
+</code></pre>
+<h2 id="11-宁以pass-by-reference-to-const替换pass-by-value"><a href="#11-宁以pass-by-reference-to-const替换pass-by-value" class="headerlink" title="11.宁以pass-by-reference-to-const替换pass-by-value"></a>11.宁以pass-by-reference-to-const替换pass-by-value</h2><pre><code class="bash">减少复制，提高效率
+</code></pre>
+<h2 id="12-必须返回对象时，别妄想返回其reference"><a href="#12-必须返回对象时，别妄想返回其reference" class="headerlink" title="12.必须返回对象时，别妄想返回其reference"></a>12.必须返回对象时，别妄想返回其reference</h2><pre><code class="bash">错误1：
+const Rational &amp; operator*(const Rational &amp;lhs,const Rational &amp;rhs)
+{
+    Rational result(lhs.n*rhs.n,lhs.d*rhs.d);
+    <span class="built_in">return</span> result;//引用的是已被销毁的<span class="built_in">local</span>对象
+}
+错误2：
+const Rational &amp; operator*(const Rational &amp;lhs,const Rational &amp;rhs)
+{
+    Rational *result=new Rational(lhs.n*rhs.n,lhs.d*rhs.d);
+    <span class="built_in">return</span> *result; 
+}//问题：必须付出一个“构造函数调用”代价，同时如何对new出来的对象实施delect?
+正确写法：
+inline const Rational operator*(const Rational &amp;lhs,const Rational &amp;rhs)
+{
+    <span class="built_in">return</span> Rational(lhs.n*rhs.n,lhs.d*rhs.d);
+}
+绝不要返回pointer或reference指向一个<span class="built_in">local</span> stack对象，或返回reference 指向
+一个heap-allocated对象，或返回pointer或reference指向一个<span class="built_in">local</span> static对象
+而有可能同时需要多个这样的对象。
+</code></pre>
+<h2 id="13-将成员变量声明为private-protected并不比public更具有封装性"><a href="#13-将成员变量声明为private-protected并不比public更具有封装性" class="headerlink" title="13.将成员变量声明为private,protected并不比public更具有封装性"></a>13.将成员变量声明为private,protected并不比public更具有封装性</h2><h2 id="14-宁以non-member，non-friend替换member函数"><a href="#14-宁以non-member，non-friend替换member函数" class="headerlink" title="14.宁以non-member，non-friend替换member函数"></a>14.宁以non-member，non-friend替换member函数</h2><h2 id="15-使用非成员函数（non-member）处理函数的所有参数都需要类型转换"><a href="#15-使用非成员函数（non-member）处理函数的所有参数都需要类型转换" class="headerlink" title="15.使用非成员函数（non-member）处理函数的所有参数都需要类型转换"></a>15.使用非成员函数（non-member）处理函数的所有参数都需要类型转换</h2><pre><code class="bash">因为成员函数的发起者必须是类，若出现double类型在前的情况，则无法执行乘法，
+所以应使用非成员函数。
+例：
+class Rational{
+    public:
+        Rational(double numerator=0,double denominator=1)
+                :m_n(numerator),m_d(denominator){}
+        double numerator() const{<span class="built_in">return</span> m_n;}
+        double denominator() const{<span class="built_in">return</span> m_d;}
+        double <span class="function"><span class="title">value</span></span>(){<span class="built_in">return</span> (m_n/m_d);}
+    private:
+        double m_n;
+        double m_d;
+};
+const Rational operator *(const Rational &amp;lhs,const Rational &amp;rhs)
+{
+    <span class="built_in">return</span> Rational(lhs.numerator()*rhs.numerator(),lhs.denominator()*rhs.denominator());
+}
+</code></pre>
+<h2 id="16-inline函数"><a href="#16-inline函数" class="headerlink" title="16.inline函数"></a>16.inline函数</h2><pre><code class="bash">inline函数背后的整体观念是，将“对此函数的每一个调用”都以函数本体替换之。
+</code></pre>
+<h2 id="17-绝对不要重新定义继承而来的non-virtual函数"><a href="#17-绝对不要重新定义继承而来的non-virtual函数" class="headerlink" title="17.绝对不要重新定义继承而来的non-virtual函数"></a>17.绝对不要重新定义继承而来的non-virtual函数</h2><h2 id="18-如果派生类的函数与基类函数同名，但是参数不同。"><a href="#18-如果派生类的函数与基类函数同名，但是参数不同。" class="headerlink" title="18.如果派生类的函数与基类函数同名，但是参数不同。"></a>18.如果派生类的函数与基类函数同名，但是参数不同。</h2><pre><code class="bash">此时，无论其有无virtual关键字，基类的函数将被隐藏。
+</code></pre>
+<h2 id="19-如果派生类的函数与基类函数同名，而且参数也相同。"><a href="#19-如果派生类的函数与基类函数同名，而且参数也相同。" class="headerlink" title="19.如果派生类的函数与基类函数同名，而且参数也相同。"></a>19.如果派生类的函数与基类函数同名，而且参数也相同。</h2><pre><code class="bash">基类没有关键字，此时基类的函数被隐藏。
+</code></pre>
+<h2 id="20-c-纯虚函数"><a href="#20-c-纯虚函数" class="headerlink" title="20.c++纯虚函数"></a>20.c++纯虚函数</h2><pre><code class="bash">virtual void <span class="keyword">function</span>()=0;
+</code></pre>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://arsenal0502.github.io/2016/12/13/effective-c-plus-plus/" data-id="ciwn9edpk0003p4uapwfuzyt8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/">c++</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/12/12/linux命令小结/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">linux命令小结</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spark/">Spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/deep-learning/">deep learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/">linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/machine-learning/">machine learning</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Spark/" style="font-size: 10px;">Spark</a> <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/deep-learning/" style="font-size: 10px;">deep learning</a> <a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/machine-learning/" style="font-size: 10px;">machine learning</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">十二月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">十月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/12/13/effective-c-plus-plus/">effective c plus plus</a>
+          </li>
+        
+          <li>
+            <a href="/2016/12/12/linux命令小结/">linux命令小结</a>
+          </li>
+        
+          <li>
+            <a href="/2016/12/12/tensorflow学习总结/">tensorflow学习总结</a>
+          </li>
+        
+          <li>
+            <a href="/2016/10/29/EM算法/">EM算法</a>
+          </li>
+        
+          <li>
+            <a href="/2016/10/29/Spark优化总结/">Spark优化总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 康宁<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>
