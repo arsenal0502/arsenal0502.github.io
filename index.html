@@ -106,12 +106,23 @@
 <p>$k=E[g^2]_{k-1}$</p>
 <p>$E[g^2]_t=\rho k+(1-\rho)g_t^2$</p>
 <p>$\Delta x_t=-\frac{\eta}{\sqrt{E[g^2]_t+\xi}} g_t$</p>
-<p>这里$\rho$是衰减系数，通过这个衰减系数，我们令每一个时刻的$g_t$随着时间按照$\rho$指数衰减</p>
+<p>这里$\rho$是衰减系数，通过这个衰减系数，我们令每一个时刻的$g_t$随着时间按照$\rho$指数衰减，<br>这样就相当于我们仅使用离当前时刻比较近的$g_t$信息，从而使得很长时间以后，参数仍然可以得到<br>更新。</p>
+<h2 id="6-Adam-Adaptive-Moment-Estimation"><a href="#6-Adam-Adaptive-Moment-Estimation" class="headerlink" title="6.Adam (Adaptive Moment Estimation)"></a>6.Adam (Adaptive Moment Estimation)</h2><p>Adam的思路和Adagrad相似，都使用梯度平方根归一化学习率。<br>维护一个一阶momentum，等价于梯度：</p>
+<p>$a=m_{t-1}$</p>
+<p>$m_t=\alpha \cdot a+(1-\alpha)\cdot \Delta Q(w)$</p>
+<p>另一个二阶moentum，等价于梯度平方：</p>
+<p>$b=v_{t-1}$</p>
+<p>$v_t=\beta\cdot b+(1-\beta)\cdot\Delta Q(w)^2$</p>
+<p>由于m,v都初始化为0，使用t次幂让其在头几次迭代中更大一些：</p>
+<p>$\widehat{m_t}=\frac{m_t}{1-\alpha^t}$</p>
+<p>$\widehat{v_t}=\frac{v_t}{1-\beta^t}$</p>
+<p>使用梯度平方v归一化学习率，更新幅度为梯度m:</p>
+<p>$w_{t+1}=w_t-\eta\frac{1}{\sqrt{\widehat{v_t}}}\widehat{m_t}$</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/12/13/各种优化方法总结比较/" data-id="ciwnme8qy0009cwuat4rbo48y" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/12/13/各种优化方法总结比较/" data-id="ciwoamuye0009youavjkc13z7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/">machine learning</a></li></ul>
@@ -286,7 +297,7 @@ const Rational operator *(const Rational &amp;lhs,const Rational &amp;rhs)
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/12/13/effective-c-plus-plus/" data-id="ciwnme8qj0003cwuaeqf0fq3i" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/12/13/effective-c-plus-plus/" data-id="ciwoamuxz0003youa13run30m" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/">c++</a></li></ul>
@@ -325,7 +336,7 @@ const Rational operator *(const Rational &amp;lhs,const Rational &amp;rhs)
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/12/12/linux命令小结/" data-id="ciwnme8qq0005cwuacwm0ka28" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/12/12/linux命令小结/" data-id="ciwoamuy40005youabdodh8ue" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
@@ -377,7 +388,7 @@ const Rational operator *(const Rational &amp;lhs,const Rational &amp;rhs)
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/12/12/tensorflow学习总结/" data-id="ciwnme8qv0008cwuaql6ni356" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/12/12/tensorflow学习总结/" data-id="ciwoamuyb0008youaciiaeuh9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/deep-learning/">deep learning</a></li></ul>
@@ -435,7 +446,7 @@ const Rational operator *(const Rational &amp;lhs,const Rational &amp;rhs)
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/10/29/EM算法/" data-id="ciwnme8q40000cwuakxd934hr" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/10/29/EM算法/" data-id="ciwoamuxo0000youa1zv7tute" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/">machine learning</a></li></ul>
@@ -498,7 +509,7 @@ flatmap会将字符串看成是一个字符串数组。
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/10/29/Spark优化总结/" data-id="ciwnme8qb0001cwuagxl7r47g" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/10/29/Spark优化总结/" data-id="ciwoamuxu0001youaf53b01hm" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spark/">Spark</a></li></ul>
@@ -545,7 +556,7 @@ flatmap会将字符串看成是一个字符串数组。
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://arsenal0502.github.io/2016/10/29/hello-world/" data-id="ciwnme8qk0004cwuaz10uum3d" class="article-share-link">Share</a>
+      <a data-url="http://arsenal0502.github.io/2016/10/29/hello-world/" data-id="ciwoamuy00004youaf67hz8g3" class="article-share-link">Share</a>
       
       
     </footer>
