@@ -1,0 +1,720 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="c++," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="1.新的关键字auto:为了自动类型推导（在编译时对类型进行类型推导，不影响运行效率）例：auto i=1;
+decltype:可以从一个变量或表达式中得到类型例：int x=3;    decltype(x) y=x;
+nullptr:为解决原来c++中null的二义性问题而引进的一种新的类型，因为null实际代表0
+void F(int a)
+{
+  cout&amp;lt;&amp;lt;a&amp;lt;&amp;lt;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c plus plus11新特性">
+<meta property="og:url" content="http://arsenal0502.github.io/2016/12/21/c-plus-plus11新特性/index.html">
+<meta property="og:site_name" content="功夫阿拉克的博客">
+<meta property="og:description" content="1.新的关键字auto:为了自动类型推导（在编译时对类型进行类型推导，不影响运行效率）例：auto i=1;
+decltype:可以从一个变量或表达式中得到类型例：int x=3;    decltype(x) y=x;
+nullptr:为解决原来c++中null的二义性问题而引进的一种新的类型，因为null实际代表0
+void F(int a)
+{
+  cout&amp;lt;&amp;lt;a&amp;lt;&amp;lt;">
+<meta property="og:updated_time" content="2016-12-21T03:36:31.931Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="c plus plus11新特性">
+<meta name="twitter:description" content="1.新的关键字auto:为了自动类型推导（在编译时对类型进行类型推导，不影响运行效率）例：auto i=1;
+decltype:可以从一个变量或表达式中得到类型例：int x=3;    decltype(x) y=x;
+nullptr:为解决原来c++中null的二义性问题而引进的一种新的类型，因为null实际代表0
+void F(int a)
+{
+  cout&amp;lt;&amp;lt;a&amp;lt;&amp;lt;">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://arsenal0502.github.io/2016/12/21/c-plus-plus11新特性/"/>
+
+
+
+
+
+  <title> c plus plus11新特性 | 功夫阿拉克的博客 </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">功夫阿拉克的博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle">永远忠于年轻时的梦想</p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://arsenal0502.github.io/2016/12/21/c-plus-plus11新特性/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="康宁">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://https://github.com/arsenal0502/arsenal0502.github.io/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="功夫阿拉克的博客">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="功夫阿拉克的博客" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                c plus plus11新特性
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-21T11:27:58+08:00">
+                2016-12-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-新的关键字"><a href="#1-新的关键字" class="headerlink" title="1.新的关键字"></a>1.新的关键字</h2><p>auto:为了自动类型推导（在编译时对类型进行类型推导，不影响运行效率）<br>例：auto i=1;</p>
+<p>decltype:可以从一个变量或表达式中得到类型<br>例：int x=3;<br>    decltype(x) y=x;</p>
+<p>nullptr:为解决原来c++中null的二义性问题而引进的一种新的类型，因为null实际代表0</p>
+<pre><code class="bash">void F(int a)
+{
+  cout&lt;&lt;a&lt;&lt;endl;
+}
+void F(int *p)
+{
+  assert(p!=NULL);
+  cout&lt;&lt;p&lt;&lt;endl;
+}
+int <span class="function"><span class="title">main</span></span>()
+{
+  int *p=nullptr;
+  int *q=NULL;
+  bool equal=(p==q);//equal的值为<span class="literal">true</span>,说明p和q都是空指针
+  int a=nullptr;//编译失败，nullptr不能转型为int
+  F(0);//在c++98中编译失败，有二义性；在c++11中调用F(int)
+  F(nullptr);
+  <span class="built_in">return</span> 0;
+}
+</code></pre>
+<h2 id="2-更优雅的初始化方法"><a href="#2-更优雅的初始化方法" class="headerlink" title="2.更优雅的初始化方法"></a>2.更优雅的初始化方法</h2><p>在引入c++11之前，只有数组能使用初始化列表，其他容器想要使用初始化列表，只能用以下方法：</p>
+<pre><code class="bash">int arr[3]={1,2,3};
+vector&lt;int&gt; v(arr,arr+3);
+</code></pre>
+<p>在c++11中，我们可以使用以下语法来进行替换：</p>
+<pre><code class="bash">int arr[3]{1,2,3};
+vector&lt;int&gt; iv{1,2,3};
+map &lt;int,string&gt;{{1,"a"},{2,"b"}};
+string str{<span class="string">"Hello World"</span>};
+</code></pre>
+<h2 id="3-可变模板参数"><a href="#3-可变模板参数" class="headerlink" title="3.可变模板参数"></a>3.可变模板参数</h2><pre><code class="bash">(1)
+template&lt;typename...T&gt;
+void fun(T...args)
+{
+  cout&lt;&lt;sizeof...(args)&lt;&lt;endl;
+}
+(2)
+template&lt;typename...Element&gt; class tuple;
+tuple&lt;int,string&gt; a;
+(3)
+template &lt;typename T,unsigned PrimaryDimesion,unsign...Dimesions&gt;
+class array{/**/};
+array&lt;double,3,3&gt; rotation_matrix;
+(4)
+template&lt;typename...Elements&gt; class tuple;//利用递归
+template&lt;typename Head,typename...Tail&gt;
+class tuple&lt;Head,Tail...&gt;:private tuple&lt;Tail...&gt;
+{
+    Head head;
+  public:
+    /*implementation*/
+}
+template&lt;&gt; class tuple&lt;&gt;
+{
+  /*zero-tuple implementation*/
+};
+</code></pre>
+<h2 id="4-模板"><a href="#4-模板" class="headerlink" title="4.模板"></a>4.模板</h2><p>(1)通常有两种形式：函数模板和类模板；<br>函数模板针对仅参数类型不同的函数；<br>类模板针对仅数据成员和成员函数类型不同的类；<br>例：swap的模板函数形式为<br>template <class t=""> void swap(T &amp;a,T &amp;b)<br>例：类模板声明<br>template <class t=""> class A{public:T a;T b;T hy(T c,T &amp;d);};<br>例：类模板外部定义成员函数的方法为<br>template <class t1,class="" t2=""> void A<t1,t2>::h(){}</t1,t2></class></class></class></p>
+<p>(2)模板的特化<br>针对某个特定的类型，在定义的时候给出不同一般数据类型的逻辑实现。而在使用的时候，<br>这个特殊性完全被屏蔽，你仍然只需要按照模板来使用，但是编译器会根据你之前的设定，<br>给特别的数据类型以特定的代码逻辑。<br>例：<br>template<class t=""> class stack{};<br>template&lt;&gt; class stack<bool>{};//bool型比较节省空间<br>例：<br>template<class t=""><br>T mymax(const T t1,const T t2)<br>{<br>  return t1<t2?t2:t1; }="" template<=""><br>const char<em>mymax(const char </em>t1,const char *t2)<br>{<br>  return(strcmp(t1,t2)&lt;0)?t2:t1;<br>}</t2?t2:t1;></class></bool></class></p>
+<p>(3)模板的偏特化</p>
+<p>类模板的偏特化<br>例：c++标准库中的类vector的定义<br>template <class t,class="" allocator=""><br>class vector{/<em>…</em>/};<br>template <class allocator=""><br>class vector<bool,allocator>{/<em>…</em>/};</bool,allocator></class></class></p>
+<p>函数模板的偏特化<br>严格的来说，函数模板不支持偏特化，但可以对函数进行重载，达到类似效果。<br>template <class t=""> void f(T); //(a)<br>对基模板(a)重载<br>template <class t=""> void f(*T);</class></class></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/c/" rel="tag"># c++</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/14/最大熵马尔科夫模型/" rel="next" title="最大熵马尔科夫模型">
+                <i class="fa fa-chevron-left"></i> 最大熵马尔科夫模型
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://https://github.com/arsenal0502/arsenal0502.github.io/avatar.jpeg"
+               alt="康宁" />
+          <p class="site-author-name" itemprop="name">康宁</p>
+          <p class="site-description motion-element" itemprop="description">他不断的跑啊跑，为的是追上那个称被寄予厚望的自己</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">Tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-新的关键字"><span class="nav-number">1.</span> <span class="nav-text">1.新的关键字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-更优雅的初始化方法"><span class="nav-number">2.</span> <span class="nav-text">2.更优雅的初始化方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-可变模板参数"><span class="nav-number">3.</span> <span class="nav-text">3.可变模板参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-模板"><span class="nav-number">4.</span> <span class="nav-text">4.模板</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">康宁</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
